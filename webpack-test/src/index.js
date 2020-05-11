@@ -7,12 +7,17 @@
 
 */
 
-function add (a, b) {
-  return a + b
-}
-import data from './data.json'
-import './css/index.css'
-import './less/index.less'
+import data from './data.json';
+import './css/index.css';
+import './less/index.less';
 
-console.log(add(1, 2))
+function add(a, b) {
+  return a + b;
+}
+
+const a = () => {
+  return 23
+}
+console.log(add(1, 2));
 console.log(data);
+console.log(a());

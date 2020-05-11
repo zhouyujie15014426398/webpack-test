@@ -6,7 +6,10 @@
  const {resolve} = require('path')
 
  const HtmlWebpackPlugin = require('html-webpack-plugin')
+ const MiniCsExtractPlugin = require('mini-css-extract-plugin')
+ const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
 
+ process.env.NODE_ENV = 'development'
 
 module.exports = {
   // webpack 配置
@@ -18,14 +21,43 @@ module.exports = {
   },
   module: {
     rules: [
-      
+      { //
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+        options: {
+          presets: ['@babel/preset-env']
+        }
+      },
+      // { // eslint-disable-next-line
+      //   test: /\.js$/,
+      //   exclude: /node_modules/,
+      //   loader: 'eslint-loader',
+      //   options: {
+      //     // fix: true
+      //   }
+      // },
       {
         test: /\.less$/i,
-        use: ['style-loader', 'css-loader', 'less-loader'],
+        // 会在js 中创建 style 标签
+        // use: ['style-loader', 'css-loader', 'less-loader'],
+        use: [MiniCsExtractPlugin.loader, 'css-loader', 'less-loader'],
       },
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        // use: ['style-loader', 'css-loader'],
+        use: [
+          MiniCsExtractPlugin.loader, 'css-loader', 
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              plugins: () => {
+                require('postcss-preset-env')()
+              }
+            }
+          }
+        ],
       },
       {
         test: /\.(png|jpg|jpeg|gif)$/,
@@ -52,7 +84,9 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({template: './src/index.html'})
+    new HtmlWebpackPlugin({template: './src/index.html'}),
+    new MiniCsExtractPlugin({filename: 'css/index.css'}),
+    new OptimizeCssAssetsWebpackPlugin(),
   ],
   mode: 'development',
   // mode: 'production',
