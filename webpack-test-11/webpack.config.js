@@ -7,20 +7,21 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 process.env.NODE_ENV = 'production'
 
 const commonCssLoader = [
-  {
-    loader: MiniCssExtractPlugin.loader,
-    options: {
-      publicPath: '../'
-    }
-  }, 
+  // {
+  //   loader: MiniCssExtractPlugin.loader,
+  //   options: {
+  //     publicPath: '../'
+  //   }
+  // }, 
+  MiniCssExtractPlugin.loader,
   'css-loader',
   {
     loader: 'postcss-loader',
     options: {
       ident: 'postcss',
-      plugins: () => {
+      plugins: () => [
         require('postcss-preset-env')()
-      }
+      ]
     }
   }
 ]

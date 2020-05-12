@@ -47,7 +47,7 @@
     ],
     "production": [
       ">0.2%",
-      "not bead",
+      "not dead",
       "not op_mini all"
     ]
   }

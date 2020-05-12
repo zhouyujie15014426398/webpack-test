@@ -26,6 +26,7 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'eslint-loader',
+        enforce: 'pre',
         options: {
           // fix: true
         }
@@ -80,9 +81,9 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
               ident: 'postcss',
-              plugins: () => {
+              plugins: () => [
                 require('postcss-preset-env')()
-              }
+              ]
             }
           }
         ],
