@@ -9,7 +9,8 @@
  const MiniCsExtractPlugin = require('mini-css-extract-plugin')
  const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
 
- process.env.NODE_ENV = 'development'
+//  process.env.NODE_ENV = 'development'
+ process.env.NODE_ENV = 'production'
 
 module.exports = {
   // webpack 配置
@@ -21,33 +22,60 @@ module.exports = {
   },
   module: {
     rules: [
-      { //
+      { // eslint-disable-next-line
         test: /\.js$/,
-        loader: 'babel-loader',
         exclude: /node_modules/,
+        loader: 'eslint-loader',
         options: {
-          presets: ['@babel/preset-env']
+          // fix: true
         }
       },
-      // { // eslint-disable-next-line
-      //   test: /\.js$/,
-      //   exclude: /node_modules/,
-      //   loader: 'eslint-loader',
-      //   options: {
-      //     // fix: true
-      //   }
-      // },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        options: {
+          presets: [
+            [
+              '@babel/preset-env',
+              {
+                useBuiltIns: 'usage',
+                corejs: {version: 3},
+                targets: {
+                  chrome: '60',
+                  firefox: '50'
+                }
+              }
+            ]
+          ]
+        }
+      },
       {
         test: /\.less$/i,
         // 会在js 中创建 style 标签
         // use: ['style-loader', 'css-loader', 'less-loader'],
-        use: [MiniCsExtractPlugin.loader, 'css-loader', 'less-loader'],
+        use: [
+          {
+            loader: MiniCsExtractPlugin.loader,
+            options: {
+              publicPath: '../'
+            }
+          }, 
+          
+          'css-loader', 'less-loader'],
       },
       {
         test: /\.css$/i,
         // use: ['style-loader', 'css-loader'],
         use: [
-          MiniCsExtractPlugin.loader, 'css-loader', 
+          {
+            loader: MiniCsExtractPlugin.loader,
+            options: {
+              publicPath: '../'
+            }
+          }, 
+          
+          'css-loader', 
           {
             loader: 'postcss-loader',
             options: {
@@ -65,7 +93,7 @@ module.exports = {
         options: {
           limit: 8 * 1024, 
           esModule: false,
-          name: '[hash:10].[ext]',
+          // name: '[hash:10].[ext]',
           outputPath: 'img'
         }
       },
@@ -84,12 +112,20 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({template: './src/index.html'}),
-    new MiniCsExtractPlugin({filename: 'css/index.css'}),
+    new HtmlWebpackPlugin({
+      template: './src/index.html',
+      minify: {
+        collapseWhitespace: true,
+        removeComments: true
+      }
+    }),
+    new MiniCsExtractPlugin({
+      filename: 'css/index.css',
+      
+    }),
     new OptimizeCssAssetsWebpackPlugin(),
   ],
-  mode: 'development',
-  // mode: 'production',
+  mode: process.env.NODE_ENV,
 
   devServer: {
     contentBase: resolve(__dirname, 'dist'),
